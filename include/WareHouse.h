@@ -5,6 +5,7 @@ using namespace std;
 
 #include "Order.h"
 #include "Customer.h"
+#include "Volunteer.h"
 
 class BaseAction;
 class Volunteer;
@@ -25,6 +26,7 @@ class WareHouse {
         const vector<BaseAction*> &getActions() const;
         void close();
         void open();
+        void parseText(const string &configFilePath);
 
     private:
         bool isOpen;
@@ -36,4 +38,7 @@ class WareHouse {
         vector<Customer*> customers;
         int customerCounter; //For assigning unique customer IDs
         int volunteerCounter; //For assigning unique volunteer IDs
+
+        int orderCounter; // still need to use this
+        vector<Order*> allOrders;
 };
