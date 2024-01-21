@@ -29,6 +29,7 @@ class Customer {
         const int locationDistance;
         const int maxOrders;
         vector<int> ordersId;
+        int numOrders;
 };
 
 
