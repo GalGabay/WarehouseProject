@@ -51,16 +51,16 @@ int Customer::addOrder(int orderId) {
 SoldierCustomer::SoldierCustomer(int id, string name, int locationDistance, int maxOrders) :
     Customer(id,name,locationDistance,maxOrders) {}
 
-
-// ????
-//SoldierCustomer SoldierCustomer::*clone() const {
- //   SoldierCustomer newCustomer(*this);
-//    return (*newCustomer);
-//}
+SoldierCustomer* SoldierCustomer::clone() const {
+    return new SoldierCustomer(*this);
+}
 
 CivilianCustomer::CivilianCustomer(int id, string name, int locationDistance, int maxOrders) :
     Customer(id,name,locationDistance,maxOrders) {}
 
+CivilianCustomer* CivilianCustomer::clone() const {
+    return new CivilianCustomer(*this);
+}
 
 
 
