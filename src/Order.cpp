@@ -3,7 +3,9 @@
 using namespace std;
 
 Order::Order(int _id, int _customerId, int _distance) : 
-    id(_id), customerId(_customerId), distance(_distance)
+    id(_id), customerId(_customerId), distance(_distance), 
+    driverId(NO_VOLUNTEER), collectorId(NO_VOLUNTEER),
+    status(OrderStatus::PENDING)
     {}
 
 
@@ -40,3 +42,7 @@ OrderStatus Order::getStatus() const {
 //const string Order::toString() const {
  //   cout << "Order: " << id << "is: " << status << endl
 //}
+
+const int Order::getDistance() const {
+    return distance;
+}
