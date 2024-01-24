@@ -68,12 +68,12 @@ bool CollectorVolunteer::hasOrdersLeft() const {
 }
 
 bool CollectorVolunteer::canTakeOrder(const Order &order) const {
-    return activeOrderId == NO_ORDER;
+    return !isBusy();
 }
 
 // it's weird! prepare or accept an order???
 void CollectorVolunteer::acceptOrder(const Order &order) {
-    activeOrderId = NO_ORDER;
+    activeOrderId = order.getId();
     timeLeft = coolDown;
 }
 
@@ -101,12 +101,12 @@ bool LimitedCollectorVolunteer::hasOrdersLeft() const {
 }
 
 bool LimitedCollectorVolunteer::canTakeOrder(const Order &order) const {
-    return activeOrderId == NO_ORDER && hasOrdersLeft();
+    return !isBusy() && hasOrdersLeft();
 }
 
 // // it's weird! prepare or accept an order???
 void LimitedCollectorVolunteer::acceptOrder(const Order &order) {
-    activeOrderId = NO_ORDER;
+    activeOrderId = order.getId();
     setTimeLeft(getCoolDown());
     ordersLeft--;
 }
@@ -158,10 +158,11 @@ int DriverVolunteer::getDistanceLeft() const {
 
  bool DriverVolunteer::canTakeOrder(const Order &order) const {
     int distance = order.getDistance();
-    return (maxDistance >= distance && activeOrderId == NO_ORDER);
+    return (maxDistance >= distance && !isBusy());
  }
 
  void DriverVolunteer::acceptOrder(const Order &order) {
+    activeOrderId = order.getId();
     distanceLeft = order.getDistance();
  }
 
@@ -201,10 +202,12 @@ bool LimitedDriverVolunteer::hasOrdersLeft() const {
 }
 
 bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
-    return activeOrderId == NO_ORDER && hasOrdersLeft();
+    return !isBusy() && hasOrdersLeft();
 }
 
+// ???
  void LimitedDriverVolunteer::acceptOrder(const Order &order) {
+    activeOrderId = order.getId();
     setDistanceLeft(order.getDistance());
     ordersLeft--;
  }

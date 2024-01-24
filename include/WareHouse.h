@@ -26,7 +26,11 @@ class WareHouse {
         const vector<BaseAction*> &getActions() const;
         void close();
         void open();
+
         void parseText(const string &configFilePath);
+        const vector<Order*>& getPendingOrders() const;
+        const vector<Order*>& getProcessOrders() const;
+        const vector<Volunteer*>& getVolunteers() const;
 
     private:
         bool isOpen;
