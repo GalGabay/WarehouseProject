@@ -29,7 +29,14 @@ void WareHouse::start() {
 }
 
 void WareHouse::addOrder(Order* order) {
-    pendingOrders.push_back(order);
+    if(order->getStatus() == OrderStatus::PENDING) 
+        pendingOrders.push_back(order);
+    else if(order->getStatus() == OrderStatus::COLLECTING)
+        inProcessOrders.push_back(order);
+    else if(order->getStatus() == OrderStatus::DELIVERING)
+        inProcessOrders.push_back(order);
+    else if(order->getStatus() == OrderStatus::COMPLETED)
+        completedOrders.push_back(order);
     allOrders.push_back(order);
 }
 
@@ -66,6 +73,18 @@ void WareHouse::close() {
 void WareHouse::open() {
     isOpen = true;
 }
+
+
+const vector<Order*>& WareHouse::getPendingOrders() const {
+        return pendingOrders;
+    }
+const vector<Order*>& WareHouse::getProcessOrders() const {
+    return inProcessOrders;
+}
+const vector<Volunteer*>& WareHouse::getVolunteers() const {
+        return volunteers;
+    }
+
 
 
 
