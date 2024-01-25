@@ -101,6 +101,7 @@ void WareHouse::parseText(const string &configFilePath) {
     std::string line;
     while (std::getline(inputFile, line)) {
         
+        
         std::istringstream iterateWord(line);
         std::string word;
         std::string firstWord;
@@ -118,40 +119,49 @@ void WareHouse::parseText(const string &configFilePath) {
             iterateWord >> fourthWord;
             iterateWord >> fifthWord;
             if(thirdWord=="soldier") {
-                SoldierCustomer newSoldierCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-                customers.push_back(&newSoldierCustomer);
+                SoldierCustomer* newSoldierCustomer = new SoldierCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+                customers.push_back(newSoldierCustomer);
             } else {
-                CivilianCustomer newCivilianCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-                customers.push_back(&newCivilianCustomer);
+                CivilianCustomer* newCivilianCustomer = new CivilianCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+                customers.push_back(newCivilianCustomer);
             }
             customerCounter++;
         } else if(firstWord=="volunteer") {
+            
             iterateWord >> secondWord;
             iterateWord >> thirdWord;
+     
             
             if(thirdWord == "collector") {
+            
                 iterateWord >> fourthWord;
-                CollectorVolunteer newCollectorVolunteer(volunteerCounter,secondWord,stoi(fourthWord));
-                volunteers.push_back(&newCollectorVolunteer);
+                CollectorVolunteer* newCollectorVolunteer = new CollectorVolunteer(volunteerCounter,secondWord,stoi(fourthWord));
+                volunteers.push_back(newCollectorVolunteer);
+     
             }
             else if(thirdWord=="limited_collector") {
                 iterateWord >> fourthWord;
                 iterateWord >> fifthWord;
-                LimitedCollectorVolunteer newLimitedCollectorVolunteer(volunteerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-                volunteers.push_back(&newLimitedCollectorVolunteer);
+                LimitedCollectorVolunteer* newLimitedCollectorVolunteer = new LimitedCollectorVolunteer(volunteerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+                volunteers.push_back(newLimitedCollectorVolunteer);
+   
             } else if(thirdWord=="driver") {
                 iterateWord >> fourthWord;
                 iterateWord >> fifthWord;
-                DriverVolunteer newDriverVolunteer(volunteerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-                volunteers.push_back(&newDriverVolunteer);
+                DriverVolunteer* newDriverVolunteer = new DriverVolunteer(volunteerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+                volunteers.push_back(newDriverVolunteer);
+    
             } else {
                 iterateWord >> fourthWord;
                 iterateWord >> fifthWord;
                 iterateWord >> sixthWord;
-                LimitedDriverVolunteer newLimitedDriverVolunteer(volunteerCounter,secondWord,stoi(fourthWord),stoi(fifthWord),stoi(sixthWord));
-                volunteers.push_back(&newLimitedDriverVolunteer);
+                LimitedDriverVolunteer* newLimitedDriverVolunteer = new LimitedDriverVolunteer(volunteerCounter,secondWord,stoi(fourthWord),stoi(fifthWord),stoi(sixthWord));
+                volunteers.push_back(newLimitedDriverVolunteer);
             }
+
+
             volunteerCounter++;
         } 
 
+}
 }

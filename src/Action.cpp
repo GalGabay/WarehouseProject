@@ -36,7 +36,7 @@ BaseAction::BaseAction() {
  }
 
 // not finished!!
-void stage1(WareHouse &wareHouse) {
+void SimulateStep::stage1(WareHouse &wareHouse) {
     for(Order* order : wareHouse.getPendingOrders()) {
         if(order->getStatus() == OrderStatus::PENDING) {
 
@@ -70,7 +70,7 @@ void stage1(WareHouse &wareHouse) {
     } 
   }
 
-void stage2(WareHouse &wareHouse) { 
+void SimulateStep::stage2(WareHouse &wareHouse) { 
     for(Order* order : wareHouse.getProcessOrders()) {
         if(order->getStatus() ==OrderStatus::COLLECTING) {
 
