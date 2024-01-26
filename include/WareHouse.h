@@ -31,6 +31,8 @@ class WareHouse {
         const vector<Order*>& getPendingOrders() const;
         const vector<Order*>& getProcessOrders() const;
         const vector<Volunteer*>& getVolunteers() const;
+        void AddOrderCounter();
+        int getOrderCounter();
 
     private:
         bool isOpen;
@@ -45,4 +47,6 @@ class WareHouse {
 
         int orderCounter; // still need to use this
         vector<Order*> allOrders;
+        CollectorVolunteer* defaultVolunteer;
+        CivilianCustomer* defaultCustomer;
 };

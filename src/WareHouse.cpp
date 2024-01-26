@@ -10,6 +10,8 @@ WareHouse::WareHouse(const string &configFilePath) {
     volunteerCounter = 0;
     orderCounter = 0;
     isOpen = false;
+    defaultCustomer = new CivilianCustomer(-1, "", 0,0);
+    defaultVolunteer = new CollectorVolunteer(-1, "", 0);
 
     parseText(configFilePath);
 
@@ -31,13 +33,14 @@ void WareHouse::start() {
 void WareHouse::addOrder(Order* order) {
     if(order->getStatus() == OrderStatus::PENDING) 
         pendingOrders.push_back(order);
-    else if(order->getStatus() == OrderStatus::COLLECTING)
+    else if(order->getStatus() == OrderStatus::COLLECTING) 
         inProcessOrders.push_back(order);
     else if(order->getStatus() == OrderStatus::DELIVERING)
         inProcessOrders.push_back(order);
     else if(order->getStatus() == OrderStatus::COMPLETED)
         completedOrders.push_back(order);
     allOrders.push_back(order);
+    orderCounter++;
 }
 
 void WareHouse::addAction(BaseAction* action) {
@@ -46,14 +49,29 @@ void WareHouse::addAction(BaseAction* action) {
 
 // ?? do we need * ???
 Customer& WareHouse::getCustomer(int customerId) const {
-    Customer* costumer = customers[customerId];
-    return *costumer;
+    if(customerCounter < customerId)
+        return *defaultCustomer;
+    else {
+        Customer* costumer = customers[customerId];
+        return *costumer;
+    }
 }
 
-// ?? ?? do we need * ???
+// ?? ?? do we need * 
 Volunteer& WareHouse::getVolunteer(int volunteerId) const {
-    Volunteer* volunteer = volunteers[volunteerId];
-    return *volunteer;
+    bool isExist = false;
+    for(Volunteer* volunteer : volunteers) {
+        if(volunteer->getId() == volunteerId) {
+            isExist = true;
+        }
+    }
+    if(isExist) {
+        Volunteer* volunteer = volunteers[volunteerId];
+        return *volunteer;
+    } else {
+        return *defaultVolunteer;
+    }
+    
 }
 
 // ?? ?? do we need * ???
@@ -84,6 +102,13 @@ const vector<Order*>& WareHouse::getProcessOrders() const {
 const vector<Volunteer*>& WareHouse::getVolunteers() const {
         return volunteers;
     }
+
+void WareHouse::AddOrderCounter() {
+    orderCounter++;
+}
+int WareHouse::getOrderCounter() {
+    return orderCounter;
+}
 
 
 
