@@ -96,6 +96,10 @@ void CollectorVolunteer::setTimeLeft(int _timeLeft) {
     timeLeft = _timeLeft;
 }
 
+string CollectorVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}
+
 // ## LIMITED COLLECTOR VOLUNTEER ##
 
 LimitedCollectorVolunteer::LimitedCollectorVolunteer(int _id, string _name, int _coolDown ,int _maxOrders) :
@@ -134,6 +138,10 @@ int LimitedCollectorVolunteer::getNumOrdersLeft() const {
 // what should we write here???? !!!!
 string LimitedCollectorVolunteer::toString() const {
 
+}
+
+string LimitedCollectorVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
 }
 
 // ## DRIVER VOLUNTEER ##
@@ -193,6 +201,10 @@ int DriverVolunteer::getDistanceLeft() const {
     distanceLeft = newDistance;
   }
 
+string DriverVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}
+
  // ## LIMITED DRIVER VOLUNTEER ##
 
 LimitedDriverVolunteer::LimitedDriverVolunteer(int _id, const string &_name, int _maxDistance, int _distancePerStep,int _maxOrders) :
@@ -233,3 +245,6 @@ bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
 
  }
 
+string LimitedDriverVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}
