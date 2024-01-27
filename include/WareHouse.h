@@ -28,9 +28,16 @@ class WareHouse {
         void open();
 
         void parseText(const string &configFilePath);
-        const vector<Order*>& getPendingOrders() const;
-        const vector<Order*>& getProcessOrders() const;
-        const vector<Volunteer*>& getVolunteers() const;
+        vector<Order*>& getPendingOrders();
+        vector<Order*>& getProcessOrders();
+        vector<Order*>& getAllOrders();
+        vector<Volunteer*>& getVolunteers();
+        vector<Customer*>& getCustomers();
+        void AddOrderCounter();
+        int getOrderCounter();
+        void addCustomerCounter();
+        int getCustomerCounter();
+        void CreateCustomer(string secondWord, string thirdWord, string fourthWord, string fifthWord);
 
     private:
         bool isOpen;
@@ -45,4 +52,6 @@ class WareHouse {
 
         int orderCounter; // still need to use this
         vector<Order*> allOrders;
+        CollectorVolunteer* defaultVolunteer;
+        CivilianCustomer* defaultCustomer;
 };

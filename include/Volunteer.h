@@ -23,14 +23,21 @@ class Volunteer {
 
         virtual string toString() const = 0;
         virtual Volunteer* clone() const = 0; //Return a copy of the volunteer
+    
+        void setCompletedOrderId(int completeOrder);
+        void setActiveOrderId(int activeOrder);
+        virtual string getTypeVolunteer() = 0;
 
     protected:
         int completedOrderId; //Initialized to NO_ORDER if no order has been completed yet
         int activeOrderId; //Initialized to NO_ORDER if no order is being processed
-    
+
+        string typeVolunteer;
+
     private:
         const int id;
         const string name;
+        
 
 };
 
@@ -50,6 +57,7 @@ class CollectorVolunteer: public Volunteer {
         string toString() const override;
 
         void setTimeLeft(int timeLeft);
+        string getTypeVolunteer();
     
     private:
         const int coolDown; // The time it takes the volunteer to process an order
@@ -68,6 +76,8 @@ class LimitedCollectorVolunteer: public CollectorVolunteer {
         int getMaxOrders() const;
         int getNumOrdersLeft() const;
         string toString() const override;
+
+        string getTypeVolunteer();
     
     private:
         const int maxOrders; // The number of orders the volunteer can process in the whole simulation
@@ -92,6 +102,8 @@ class DriverVolunteer: public Volunteer {
 
         void setDistanceLeft(int newDistance);
 
+        string getTypeVolunteer();
+
     private:
         const int maxDistance; // The maximum distance of ANY order the volunteer can take
         const int distancePerStep; // The distance the volunteer does in one step
@@ -109,6 +121,8 @@ class LimitedDriverVolunteer: public DriverVolunteer {
         bool canTakeOrder(const Order &order) const override; // Signal if the volunteer is not busy, the order is within the maxDistance.
         void acceptOrder(const Order &order) override; // Assign distanceLeft to order's distance and decrease ordersLeft
         string toString() const override;
+
+        string getTypeVolunteer();
 
     private:
         const int maxOrders; // The number of orders the volunteer can process in the whole simulation

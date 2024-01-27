@@ -1,15 +1,17 @@
 #include "WareHouse.h"
+#include "Action.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <sstream>
-
 
 WareHouse::WareHouse(const string &configFilePath) {
     customerCounter = 0;
     volunteerCounter = 0;
     orderCounter = 0;
     isOpen = false;
+    defaultCustomer = new CivilianCustomer(-1, "", 0,0);
+    defaultVolunteer = new CollectorVolunteer(-1, "", 0);
 
     parseText(configFilePath);
 
@@ -22,22 +24,93 @@ void WareHouse::start() {
 
     while(isOpen) {
         string input;
-        cin >> input;
+        getline(cin, input); // WORKING !
+        istringstream iterateWord(input);
+        string firstWord; 
+        string secondWord;  
+        string thirdWord;
+        string fourthWord;
+        string fifthWord;
+        iterateWord >> firstWord;
+        if(firstWord == "step") {
+            iterateWord >> secondWord;
+            SimulateStep simulate(stoi(secondWord)); // ??
+            simulate.act(*this); // ?? is that working?
+        } else if(firstWord == "order") { // WORKING!!
+            iterateWord >> secondWord;
+            Customer* customer = customers[stoi(secondWord)];
+            if(stoi(secondWord) > customerCounter) {
+                //ERROR
+                cerr << "Cannot place this order" << endl;
+            } else if(customer->getMaxOrders() == customer->getNumOrders()) {
+                //ERROR
+                cerr << "Cannot place this order" << endl;
+            } else {
+                AddOrder addorder(stoi(secondWord));
+                addorder.act(*this);
+            }
+        } else if(firstWord == "customer") { // WORKING!!
+            iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
+            CreateCustomer(secondWord,thirdWord,fourthWord,fifthWord);
+        } else if(firstWord == "orderStatus") {
+            // don't forget to check the input
+            iterateWord >> secondWord;
+            if(stoi(secondWord) <= orderCounter) {
+                PrintOrderStatus printOrderS(stoi(secondWord)); // ??
+                printOrderS.act(*this);
+            } else {
+                cerr << "Order doesn't exist" << endl;
+            }
+        } else if(firstWord == "customerStatus") {
+            iterateWord >> secondWord;
+            if(stoi(secondWord) <= customerCounter) {
+                PrintCustomerStatus printCustomerS(stoi(secondWord));
+                printCustomerS.act(*this);
+            } else {
+                cerr << "Customer doesn't exist" << endl;
+            }
+        } else if(firstWord == "volunteerStatus") {
+            iterateWord >> secondWord;
+            if(stoi(secondWord) <= volunteerCounter) {
+                PrintVolunteerStatus printVolunteerS(stoi(secondWord));
+                printVolunteerS.act(*this);
+            } else {
+                cerr << "Volunteer doesn't exist" << endl;
+            }
+        } else if(firstWord == "log") {
+            PrintActionsLog printActionsL;
+            printActionsL.act(*this);
+        } else if(firstWord == "close") {
+            Close close;
+            close.act(*this);
+        } else if(firstWord == "backup") {
+            BackupWareHouse backup;
+            backup.act(*this);
+        } else if(firstWord == "restore") {
+            // NEED TO ADD ERROR
+            RestoreWareHouse restore;
+            restore.act(*this);
+
+        } 
+
+
         
 
     }
+
 }
 
 void WareHouse::addOrder(Order* order) {
     if(order->getStatus() == OrderStatus::PENDING) 
         pendingOrders.push_back(order);
-    else if(order->getStatus() == OrderStatus::COLLECTING)
+    else if(order->getStatus() == OrderStatus::COLLECTING) 
         inProcessOrders.push_back(order);
     else if(order->getStatus() == OrderStatus::DELIVERING)
         inProcessOrders.push_back(order);
     else if(order->getStatus() == OrderStatus::COMPLETED)
         completedOrders.push_back(order);
     allOrders.push_back(order);
+    orderCounter++;
 }
 
 void WareHouse::addAction(BaseAction* action) {
@@ -46,17 +119,32 @@ void WareHouse::addAction(BaseAction* action) {
 
 // ?? do we need * ???
 Customer& WareHouse::getCustomer(int customerId) const {
-    Customer* costumer = customers[customerId];
-    return *costumer;
+    if(customerCounter < customerId)
+        return *defaultCustomer;
+    else {
+        Customer* costumer = customers[customerId];
+        return *costumer;
+    }
 }
 
-// ?? ?? do we need * ???
+// ?? ?? do we need * 
 Volunteer& WareHouse::getVolunteer(int volunteerId) const {
-    Volunteer* volunteer = volunteers[volunteerId];
-    return *volunteer;
+    bool isExist = false;
+    for(Volunteer* volunteer : volunteers) {
+        if(volunteer->getId() == volunteerId) {
+            isExist = true;
+        }
+    }
+    if(isExist) {
+        Volunteer* volunteer = volunteers[volunteerId];
+        return *volunteer;
+    } else {
+        return *defaultVolunteer;
+    }
+    
 }
 
-// ?? ?? do we need * ???
+// ?? ?? do we need * ??? NEED TO CHANGE
 Order& WareHouse::getOrder(int orderId) const {
     Order* order = allOrders[orderId];
     return *order;
@@ -75,20 +163,51 @@ void WareHouse::open() {
 }
 
 
-const vector<Order*>& WareHouse::getPendingOrders() const {
+vector<Order*>& WareHouse::getPendingOrders() {
         return pendingOrders;
     }
-const vector<Order*>& WareHouse::getProcessOrders() const {
+vector<Order*>& WareHouse::getProcessOrders() {
     return inProcessOrders;
 }
-const vector<Volunteer*>& WareHouse::getVolunteers() const {
+vector<Order*>& WareHouse::getAllOrders() {
+    return allOrders;
+}
+
+vector<Volunteer*>& WareHouse::getVolunteers() {
         return volunteers;
     }
+vector<Customer*>& WareHouse::getCustomers() {
+        return customers;
+    }
+
+void WareHouse::AddOrderCounter() {
+    orderCounter++;
+}
+int WareHouse::getOrderCounter() {
+    return orderCounter;
+}
+
+void WareHouse::addCustomerCounter(){
+    customerCounter++;
+}
+int WareHouse::getCustomerCounter() {
+    return customerCounter;
+}
 
 
 
 
 
+void WareHouse::CreateCustomer(string secondWord, string thirdWord, string fourthWord, string fifthWord) {
+    if(thirdWord=="soldier") {
+        SoldierCustomer* newSoldierCustomer = new SoldierCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+        customers.push_back(newSoldierCustomer);
+    } else {
+        CivilianCustomer* newCivilianCustomer = new CivilianCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+        customers.push_back(newCivilianCustomer);
+    }
+    customerCounter++;
+}
 
 
 void WareHouse::parseText(const string &configFilePath) {
@@ -114,18 +233,16 @@ void WareHouse::parseText(const string &configFilePath) {
         iterateWord >> firstWord;
         
         if(firstWord=="customer") {
-            iterateWord >> secondWord;
-            iterateWord >> thirdWord;
-            iterateWord >> fourthWord;
-            iterateWord >> fifthWord;
-            if(thirdWord=="soldier") {
-                SoldierCustomer* newSoldierCustomer = new SoldierCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-                customers.push_back(newSoldierCustomer);
-            } else {
-                CivilianCustomer* newCivilianCustomer = new CivilianCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-                customers.push_back(newCivilianCustomer);
-            }
-            customerCounter++;
+            iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
+            CreateCustomer(secondWord,thirdWord,fourthWord,fifthWord);
+            // if(thirdWord=="soldier") {
+            //     SoldierCustomer* newSoldierCustomer = new SoldierCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+            //     customers.push_back(newSoldierCustomer);
+            // } else {
+            //     CivilianCustomer* newCivilianCustomer = new CivilianCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
+            //     customers.push_back(newCivilianCustomer);
+            // }
+            // customerCounter++;
         } else if(firstWord=="volunteer") {
             
             iterateWord >> secondWord;

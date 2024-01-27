@@ -29,12 +29,22 @@ const string& Volunteer::getName() const {
     return activeOrderId != NO_ORDER;
  }
 
+ void Volunteer::setCompletedOrderId(int completeOrder) {
+    completedOrderId == completeOrder;
+ }
+  void Volunteer::setActiveOrderId(int activeOrder) {
+    activeOrderId == activeOrder;
+ }
+
 
 // ## COLLECTOR VOLUNTEER ##
  
  CollectorVolunteer::CollectorVolunteer(int _id, string _name, int _coolDown) : 
   Volunteer::Volunteer(_id,_name), coolDown(_coolDown)
-   {}
+   {
+    timeLeft = NO_ORDER; // is that right??
+    typeVolunteer = "CollectorVolunteer";
+   }
 
 CollectorVolunteer* CollectorVolunteer::clone() const {
     return new CollectorVolunteer(*this);
@@ -86,11 +96,17 @@ void CollectorVolunteer::setTimeLeft(int _timeLeft) {
     timeLeft = _timeLeft;
 }
 
+string CollectorVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}
+
 // ## LIMITED COLLECTOR VOLUNTEER ##
 
 LimitedCollectorVolunteer::LimitedCollectorVolunteer(int _id, string _name, int _coolDown ,int _maxOrders) :
 CollectorVolunteer(_id,_name,_coolDown), maxOrders(_maxOrders), ordersLeft(maxOrders)
-{}
+{
+    typeVolunteer = "LimitedCollectorVolunteer";
+}
 
 LimitedCollectorVolunteer* LimitedCollectorVolunteer::clone() const {
     return new LimitedCollectorVolunteer(*this);
@@ -124,11 +140,17 @@ string LimitedCollectorVolunteer::toString() const {
 
 }
 
+string LimitedCollectorVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}
+
 // ## DRIVER VOLUNTEER ##
 
 DriverVolunteer::DriverVolunteer(int _id, string _name, int _maxDistance, int _distancePerStep) :
 Volunteer(_id,_name), maxDistance(_maxDistance), distancePerStep(_distancePerStep)
-{}
+{
+    typeVolunteer = "DriverVolunteer";
+}
 
 DriverVolunteer* DriverVolunteer::clone() const  {
     return new DriverVolunteer(*this);
@@ -179,11 +201,17 @@ int DriverVolunteer::getDistanceLeft() const {
     distanceLeft = newDistance;
   }
 
+string DriverVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}
+
  // ## LIMITED DRIVER VOLUNTEER ##
 
 LimitedDriverVolunteer::LimitedDriverVolunteer(int _id, const string &_name, int _maxDistance, int _distancePerStep,int _maxOrders) :
 DriverVolunteer(_id,_name,_maxDistance,_distancePerStep), maxOrders(_maxOrders), ordersLeft(_maxOrders)
-{}
+{
+    typeVolunteer = "LimitedDriverVolunteer";
+}
 
 LimitedDriverVolunteer* LimitedDriverVolunteer::clone() const {
     return new LimitedDriverVolunteer(*this);
@@ -217,3 +245,6 @@ bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
 
  }
 
+string LimitedDriverVolunteer::getTypeVolunteer() {
+    return typeVolunteer;
+}

@@ -38,10 +38,27 @@ OrderStatus Order::getStatus() const {
     return status;
 }
 
- //not finished
-//const string Order::toString() const {
- //   cout << "Order: " << id << "is: " << status << endl
-//}
+
+// Function to convert OrderStatus to string
+string Order::orderStatusToString(OrderStatus status) const {
+    switch (status) {
+        case OrderStatus::PENDING:
+            return "Pending";
+        case OrderStatus::COLLECTING:
+            return "Collecting";
+        case OrderStatus::DELIVERING:
+            return "Delivering";
+        case OrderStatus::COMPLETED:
+            return "Completed";
+        default:
+            return "Unknown";
+    }
+}
+
+const string Order::toString() const {
+   string output = "OrderId: " + std::to_string(id) + "\nOrderStatus: " + orderStatusToString(getStatus());
+   return output; 
+}
 
 const int Order::getDistance() const {
     return distance;
