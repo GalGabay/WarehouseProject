@@ -5,7 +5,7 @@
 
 // ???
 BaseAction::BaseAction() {
-    
+    errorMsg = ""; //?
 }
 
  ActionStatus BaseAction::getStatus() const {
@@ -16,9 +16,9 @@ BaseAction::BaseAction() {
     status = ActionStatus::COMPLETED;
  }
 
- void BaseAction::error(string errorMsg) {
+ void BaseAction::error(string _errorMsg) {
     status = ActionStatus::ERROR;
-    cout << "Error: " << errorMsg << endl;
+    errorMsg = _errorMsg;
  }
 
  string BaseAction::getErrorMsg() const {
@@ -29,7 +29,8 @@ BaseAction::BaseAction() {
 
 
  SimulateStep::SimulateStep(int _numOfSteps) : numOfSteps(_numOfSteps) 
- {}
+ {
+ }
 
  void SimulateStep::act(WareHouse &wareHouse) {
     int steps = numOfSteps;
@@ -256,23 +257,59 @@ PrintVolunteerStatus::PrintVolunteerStatus(int _id) : VolunteerId(_id)
 {}
 
 void PrintVolunteerStatus::act(WareHouse &wareHouse) {
-
+    Volunteer* volunteer = wareHouse.getVolunteers()[VolunteerId];
+    cout << "VolunteerID: " << VolunteerId << endl;
+    cout << "isBusy: " << volunteer->isBusy();
+    if (volunteer->isBusy()){
+        cout << "OrderID: " << volunteer->getActiveOrderId() << endl; 
+    }
+    else cout << "OrderID: None" << endl;
+    string volunteerType = volunteer->getTypeVolunteer();
+    if(volunteerType == "CollectorVolunteer") {
+        CollectorVolunteer* collectorVolunteer = dynamic_cast<CollectorVolunteer*>(volunteer);
+        if (volunteer->isBusy())
+            cout << "TimeLeft: " << collectorVolunteer->getTimeLeft() << endl;
+        else cout << "TimeLeft: None" << endl;
+        cout << "OrdersLeft: No Limit" << endl;
+    }else if (volunteerType == "LimitedCollectorVolunteer"){
+        LimitedCollectorVolunteer* limitedCollectorVolunteer = dynamic_cast<LimitedCollectorVolunteer*>(volunteer);
+        if (volunteer->isBusy())
+            cout << "TimeLeft: " << limitedCollectorVolunteer->getTimeLeft();
+        else cout << "TimeLeft: None" << endl;
+        cout << "OrdersLeft: " << limitedCollectorVolunteer->getNumOrdersLeft();
+    }else if (volunteerType == "DriverVolunteer"){
+        DriverVolunteer* driverVolunteer = dynamic_cast<DriverVolunteer*>(volunteer);
+        if (volunteer->isBusy())
+            cout << "TimeLeft: " << driverVolunteer->getDistanceLeft();
+        else cout << "TimeLeft: None" << endl;
+        cout << "OrdersLeft: No Limit" << endl;
+    }else if (volunteerType == "LimitedDriverVolunteer"){
+        LimitedDriverVolunteer* limitedDriverVolunteer = dynamic_cast<LimitedDriverVolunteer*>(volunteer);
+        if (volunteer->isBusy())
+            cout << "TimeLeft: " << limitedDriverVolunteer->getDistanceLeft();
+        cout << "TimeLeft: None" << endl;
+        cout << "OrdersLeft: " << limitedDriverVolunteer->getNumOrdersLeft();
+    }
 }
+
 PrintVolunteerStatus* PrintVolunteerStatus::clone() const {
-
+    return new PrintVolunteerStatus(*this);
 }
+// ???
 string PrintVolunteerStatus::toString() const {
 
 }
 
 PrintActionsLog::PrintActionsLog() {
-
 }
-void PrintActionsLog::act(WareHouse &wareHouse) {
 
+void PrintActionsLog::act(WareHouse &wareHouse) {
+    for (BaseAction* action : wareHouse.getActions()){
+        action->toString();
+    }
 }
 PrintActionsLog* PrintActionsLog::clone() const {
-
+    return new PrintActionsLog(*this);
 }
 string PrintActionsLog::toString() const {
     

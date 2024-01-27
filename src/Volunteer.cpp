@@ -89,7 +89,7 @@ void CollectorVolunteer::acceptOrder(const Order &order) {
 
 // what should we write here???? !!!!
 string CollectorVolunteer::toString() const {
-
+    string output = "Name: " + this->getName();
 }
 
 void CollectorVolunteer::setTimeLeft(int _timeLeft) {

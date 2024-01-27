@@ -34,11 +34,13 @@ void WareHouse::start() {
         iterateWord >> firstWord;
         if(firstWord == "step") {
             iterateWord >> secondWord;
-            SimulateStep simulate(stoi(secondWord)); // ??
-            simulate.act(*this); // ?? is that working?
+            SimulateStep step(stoi(secondWord)); 
+            addAction(&step);
+            step.act(*this); // ?? is that working?
         } else if(firstWord == "order") { // WORKING!!
             iterateWord >> secondWord;
             Customer* customer = customers[stoi(secondWord)];
+            AddOrder addOrder(stoi(secondWord));
             if(stoi(secondWord) > customerCounter) {
                 //ERROR
                 cerr << "Cannot place this order" << endl;
@@ -46,18 +48,22 @@ void WareHouse::start() {
                 //ERROR
                 cerr << "Cannot place this order" << endl;
             } else {
-                AddOrder addorder(stoi(secondWord));
-                addorder.act(*this);
+                
+                addOrder.act(*this);
+                addAction(&addOrder);
             }
         } else if(firstWord == "customer") { // WORKING!!
             iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
-            CreateCustomer(secondWord,thirdWord,fourthWord,fifthWord);
+            AddCustomer addCustomer(secondWord,thirdWord,stoi(fourthWord),stoi(fifthWord));
+            addCustomer.act(*this);
+            addAction(&addCustomer);
         } else if(firstWord == "orderStatus") {
             // don't forget to check the input
             iterateWord >> secondWord;
             if(stoi(secondWord) <= orderCounter) {
                 PrintOrderStatus printOrderS(stoi(secondWord)); // ??
                 printOrderS.act(*this);
+                addAction(&printOrderS);
             } else {
                 cerr << "Order doesn't exist" << endl;
             }
@@ -66,6 +72,7 @@ void WareHouse::start() {
             if(stoi(secondWord) <= customerCounter) {
                 PrintCustomerStatus printCustomerS(stoi(secondWord));
                 printCustomerS.act(*this);
+                addAction(&printCustomerS);
             } else {
                 cerr << "Customer doesn't exist" << endl;
             }
@@ -74,23 +81,27 @@ void WareHouse::start() {
             if(stoi(secondWord) <= volunteerCounter) {
                 PrintVolunteerStatus printVolunteerS(stoi(secondWord));
                 printVolunteerS.act(*this);
+                addAction(&printVolunteerS);
             } else {
                 cerr << "Volunteer doesn't exist" << endl;
             }
         } else if(firstWord == "log") {
             PrintActionsLog printActionsL;
             printActionsL.act(*this);
+            addAction(&printActionsL);
         } else if(firstWord == "close") {
             Close close;
             close.act(*this);
+            addAction(&close);
         } else if(firstWord == "backup") {
             BackupWareHouse backup;
             backup.act(*this);
+            addAction(&backup);
         } else if(firstWord == "restore") {
             // NEED TO ADD ERROR
             RestoreWareHouse restore;
             restore.act(*this);
-
+            addAction(&restore);
         } 
 
 
