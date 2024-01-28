@@ -20,14 +20,19 @@ class BaseAction{
     public:
         BaseAction();
         ActionStatus getStatus() const;
+        string actionStatusToString(ActionStatus status) const;
         virtual void act(WareHouse& wareHouse)=0;
         virtual string toString() const=0;
         virtual BaseAction* clone() const=0;
+
+        
 
     protected:
         void complete();
         void error(string errorMsg);
         string getErrorMsg() const;
+ 
+
 
     private:
         string errorMsg;

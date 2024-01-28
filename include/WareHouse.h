@@ -30,6 +30,7 @@ class WareHouse {
         void parseText(const string &configFilePath);
         vector<Order*>& getPendingOrders();
         vector<Order*>& getProcessOrders();
+        vector<Order*>& getCompletedOrders();
         vector<Order*>& getAllOrders();
         vector<Volunteer*>& getVolunteers();
         vector<Customer*>& getCustomers();
@@ -37,6 +38,7 @@ class WareHouse {
         int getOrderCounter();
         void addCustomerCounter();
         int getCustomerCounter();
+        int getVolunteerCounter();
         void CreateCustomer(string secondWord, string thirdWord, string fourthWord, string fifthWord);
 
     private:

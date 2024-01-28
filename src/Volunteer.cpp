@@ -1,4 +1,5 @@
 #include "../include/Volunteer.h"
+#include <iostream>
 
 
 // ## VOLUNTEER ##
@@ -78,6 +79,8 @@ bool CollectorVolunteer::hasOrdersLeft() const {
 }
 
 bool CollectorVolunteer::canTakeOrder(const Order &order) const {
+    //std::cout << "Collector " << getName() << " is of type: " << typeVolunteer << std::endl;
+    //std::cout << "Collector " << getName() << " is busy: " << isBusy() << std::endl;
     return !isBusy();
 }
 
@@ -89,7 +92,8 @@ void CollectorVolunteer::acceptOrder(const Order &order) {
 
 // what should we write here???? !!!!
 string CollectorVolunteer::toString() const {
-    string output = "Name: " + this->getName();
+    string output = "Collector: " + this->getId();
+    return output;
 }
 
 void CollectorVolunteer::setTimeLeft(int _timeLeft) {
@@ -137,7 +141,8 @@ int LimitedCollectorVolunteer::getNumOrdersLeft() const {
 
 // what should we write here???? !!!!
 string LimitedCollectorVolunteer::toString() const {
-
+    string output = "LimitedCollector: " + this->getId();
+    return output;
 }
 
 string LimitedCollectorVolunteer::getTypeVolunteer() {
@@ -194,7 +199,8 @@ int DriverVolunteer::getDistanceLeft() const {
 
 // what should we write here???? !!!!
  string DriverVolunteer::toString() const {
-
+    string output = "Driver: " + this->getId();
+    return output;
  }
 
   void DriverVolunteer::setDistanceLeft(int newDistance) {
@@ -242,7 +248,8 @@ bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
 
  // what should we write here???? !!!!
  string LimitedDriverVolunteer::toString() const {
-
+    string output = "LimitedDriver: " + this->getId();
+    return output;
  }
 
 string LimitedDriverVolunteer::getTypeVolunteer() {
