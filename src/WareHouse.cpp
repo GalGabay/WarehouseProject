@@ -39,52 +39,29 @@ void WareHouse::start() {
             step.act(*this); // ?? is that working?
         } else if(firstWord == "order") { // WORKING!!
             iterateWord >> secondWord;
-            Customer* customer = customers[stoi(secondWord)];
             AddOrder addOrder(stoi(secondWord));
-            if(stoi(secondWord) > customerCounter) {
-                //ERROR
-                cerr << "Cannot place this order" << endl;
-            } else if(customer->getMaxOrders() == customer->getNumOrders()) {
-                //ERROR
-                cerr << "Cannot place this order" << endl;
-            } else {
-                
-                addOrder.act(*this);
-                addAction(&addOrder);
-            }
+            addOrder.act(*this);
+            addAction(&addOrder);
         } else if(firstWord == "customer") { // WORKING!!
             iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
             AddCustomer addCustomer(secondWord,thirdWord,stoi(fourthWord),stoi(fifthWord));
             addCustomer.act(*this);
             addAction(&addCustomer);
         } else if(firstWord == "orderStatus") {
-            // don't forget to check the input
             iterateWord >> secondWord;
-            if(stoi(secondWord) <= orderCounter) {
-                PrintOrderStatus printOrderS(stoi(secondWord)); // ??
-                printOrderS.act(*this);
-                addAction(&printOrderS);
-            } else {
-                cerr << "Order doesn't exist" << endl;
-            }
+            PrintOrderStatus printOrderS(stoi(secondWord)); 
+            printOrderS.act(*this);
+            addAction(&printOrderS);
         } else if(firstWord == "customerStatus") {
             iterateWord >> secondWord;
-            if(stoi(secondWord) <= customerCounter) {
-                PrintCustomerStatus printCustomerS(stoi(secondWord));
-                printCustomerS.act(*this);
-                addAction(&printCustomerS);
-            } else {
-                cerr << "Customer doesn't exist" << endl;
-            }
+            PrintCustomerStatus printCustomerS(stoi(secondWord));
+            printCustomerS.act(*this);
+            addAction(&printCustomerS);
         } else if(firstWord == "volunteerStatus") {
             iterateWord >> secondWord;
-            if(stoi(secondWord) <= volunteerCounter) {
-                PrintVolunteerStatus printVolunteerS(stoi(secondWord));
-                printVolunteerS.act(*this);
-                addAction(&printVolunteerS);
-            } else {
-                cerr << "Volunteer doesn't exist" << endl;
-            }
+            PrintVolunteerStatus printVolunteerS(stoi(secondWord));
+            printVolunteerS.act(*this);
+            addAction(&printVolunteerS);
         } else if(firstWord == "log") {
             PrintActionsLog printActionsL;
             printActionsL.act(*this);
@@ -112,16 +89,17 @@ void WareHouse::start() {
 }
 
 void WareHouse::addOrder(Order* order) {
-    if(order->getStatus() == OrderStatus::PENDING) 
-        pendingOrders.push_back(order);
-    else if(order->getStatus() == OrderStatus::COLLECTING) 
-        inProcessOrders.push_back(order);
-    else if(order->getStatus() == OrderStatus::DELIVERING)
-        inProcessOrders.push_back(order);
-    else if(order->getStatus() == OrderStatus::COMPLETED)
-        completedOrders.push_back(order);
+    //if(order->getStatus() == OrderStatus::PENDING) 
+    pendingOrders.push_back(order);
+        // else if(order->getStatus() == OrderStatus::COLLECTING) 
+        //     inProcessOrders.push_back(order);
+        // else if(order->getStatus() == OrderStatus::DELIVERING)
+        //     inProcessOrders.push_back(order);
+        // else if(order->getStatus() == OrderStatus::COMPLETED)
+        //     completedOrders.push_back(order);
     allOrders.push_back(order);
     orderCounter++;
+
 }
 
 void WareHouse::addAction(BaseAction* action) {
@@ -180,6 +158,9 @@ vector<Order*>& WareHouse::getPendingOrders() {
 vector<Order*>& WareHouse::getProcessOrders() {
     return inProcessOrders;
 }
+vector<Order*>& WareHouse::getCompletedOrders() {
+    return completedOrders;
+}
 vector<Order*>& WareHouse::getAllOrders() {
     return allOrders;
 }
@@ -203,6 +184,10 @@ void WareHouse::addCustomerCounter(){
 }
 int WareHouse::getCustomerCounter() {
     return customerCounter;
+}
+
+int WareHouse::getVolunteerCounter() {
+    return volunteerCounter;
 }
 
 
