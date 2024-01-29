@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
+extern WareHouse* backup;
 
 // ???
 BaseAction::BaseAction() {
@@ -63,11 +64,14 @@ BaseAction::BaseAction() {
 
 // not finished!!
 void SimulateStep::stage1(WareHouse &wareHouse) {
-    for(Order* order : wareHouse.getPendingOrders()) {
+    vector<Order*> pendOrders =  wareHouse.getPendingOrders();
+    for(Order* order : pendOrders) {
         if(order->getStatus() == OrderStatus::PENDING) {
             for(Volunteer* volunteer : wareHouse.getVolunteers()) {
                 if(volunteer->getTypeVolunteer() == "CollectorVolunteer" || volunteer->getTypeVolunteer() == "LimitedCollectorVolunteer" ) {
+
                     if(volunteer->canTakeOrder(*order)) {
+                        
                         cout << "volunteer " << volunteer->getName() << " entered to order: " <<order->getId() <<endl;
                         volunteer->acceptOrder(*order);
                         order->setCollectorId(volunteer->getId());
@@ -106,7 +110,8 @@ void SimulateStep::stage1(WareHouse &wareHouse) {
   }
 
 void SimulateStep::stage234(WareHouse &wareHouse) { 
-    for(Order* order : wareHouse.getProcessOrders()) {
+    vector<Order*> processOrders =  wareHouse.getProcessOrders();
+    for(Order* order : processOrders) {
         if(order->getStatus() ==OrderStatus::COLLECTING) {
 
             // why &warehouse and not warehouse
@@ -138,7 +143,7 @@ void SimulateStep::stage234(WareHouse &wareHouse) {
 
             // why &warehouse and not warehouse
             DriverVolunteer* driver = dynamic_cast<DriverVolunteer*>(&wareHouse.getVolunteer(order->getDriverId()));
-            (*driver).setDistanceLeft((*driver).getDistanceLeft() - (*driver).getDistancePerStep());
+            (*driver).decreaseDistanceLeft();
             //stage 3
             if(driver->getDistanceLeft() == 0) {
                 driver->setActiveOrderId(NO_ORDER);
@@ -147,7 +152,7 @@ void SimulateStep::stage234(WareHouse &wareHouse) {
                 wareHouse.getProcessOrders().erase(std::remove_if(wareHouse.getProcessOrders().begin(), wareHouse.getProcessOrders().end(),
                                 [order](Order* o) { return o == order; }),wareHouse.getProcessOrders().end());
                 wareHouse.getCompletedOrders().push_back(order);
-
+                order->setStatus(OrderStatus::COMPLETED);
                 //stage 4
                 if(driver->getTypeVolunteer() == "LimitedDriverVolunteer") {
                     LimitedDriverVolunteer* limiteddriver = dynamic_cast<LimitedDriverVolunteer*>(driver);
@@ -245,7 +250,8 @@ PrintOrderStatus::PrintOrderStatus(int id) : orderId(id)
 {}
 
 void PrintOrderStatus::act(WareHouse &wareHouse) {
-    if(orderId <= wareHouse.getOrderCounter()) {
+    if(orderId < wareHouse.getOrderCounter()) {
+        cout << "entered" << endl;
         Order* theOrder = wareHouse.getAllOrders()[orderId];
         cout << theOrder->toString() << endl;
         cout << "CustomerId: " << theOrder->getCustomerId() << endl;
@@ -282,7 +288,7 @@ PrintCustomerStatus::PrintCustomerStatus(int _customerId) : customerId(_customer
 {}
 
 void PrintCustomerStatus::act(WareHouse &wareHouse) {
-    if(customerId <= wareHouse.getCustomerCounter()) {
+    if(customerId < wareHouse.getCustomerCounter()) {
         Customer* customer = wareHouse.getCustomers()[customerId];
         cout << "CustomerID: " << customerId << endl;
         for(int orderId : customer->getOrdersIds()) {
@@ -290,6 +296,7 @@ void PrintCustomerStatus::act(WareHouse &wareHouse) {
             cout << "OrderID: " << order->getId() << endl;
             cout << "OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
         }
+        cout << "numOrdersLeft: " << customer->getMaxOrders()-customer->getNumOrders() << endl;
         complete();
     } else {
         error("Customer doesn't exist");
@@ -312,10 +319,18 @@ PrintVolunteerStatus::PrintVolunteerStatus(int _id) : VolunteerId(_id)
 {}
 
 void PrintVolunteerStatus::act(WareHouse &wareHouse) {
-    if(VolunteerId <= wareHouse.getVolunteerCounter()) {
-        Volunteer* volunteer = wareHouse.getVolunteers()[VolunteerId];
+
+    Volunteer* volunteer = nullptr;
+    for(Volunteer* vol : wareHouse.getVolunteers()) {
+        if(vol->getId() == VolunteerId) {
+            volunteer = vol;
+            break;
+        }
+    }
+    if(volunteer != nullptr) {
         cout << "VolunteerID: " << VolunteerId << endl;
-        cout << "isBusy: " << volunteer->isBusy();
+        string isBusy = volunteer->isBusy() ? "true" : "false";
+        cout << "isBusy: " << isBusy << endl;
         if (volunteer->isBusy()){
             cout << "OrderID: " << volunteer->getActiveOrderId() << endl; 
         }
@@ -330,21 +345,21 @@ void PrintVolunteerStatus::act(WareHouse &wareHouse) {
         }else if (volunteerType == "LimitedCollectorVolunteer"){
             LimitedCollectorVolunteer* limitedCollectorVolunteer = dynamic_cast<LimitedCollectorVolunteer*>(volunteer);
             if (volunteer->isBusy())
-                cout << "TimeLeft: " << limitedCollectorVolunteer->getTimeLeft();
+                cout << "TimeLeft: " << limitedCollectorVolunteer->getTimeLeft() << endl;
             else cout << "TimeLeft: None" << endl;
-            cout << "OrdersLeft: " << limitedCollectorVolunteer->getNumOrdersLeft();
+            cout << "OrdersLeft: " << limitedCollectorVolunteer->getNumOrdersLeft() << endl;
         }else if (volunteerType == "DriverVolunteer"){
             DriverVolunteer* driverVolunteer = dynamic_cast<DriverVolunteer*>(volunteer);
             if (volunteer->isBusy())
-                cout << "TimeLeft: " << driverVolunteer->getDistanceLeft();
+                cout << "TimeLeft: " << driverVolunteer->getDistanceLeft() << endl;
             else cout << "TimeLeft: None" << endl;
             cout << "OrdersLeft: No Limit" << endl;
         }else if (volunteerType == "LimitedDriverVolunteer"){
             LimitedDriverVolunteer* limitedDriverVolunteer = dynamic_cast<LimitedDriverVolunteer*>(volunteer);
             if (volunteer->isBusy())
-                cout << "TimeLeft: " << limitedDriverVolunteer->getDistanceLeft();
+                cout << "TimeLeft: " << limitedDriverVolunteer->getDistanceLeft() << endl;
             cout << "TimeLeft: None" << endl;
-            cout << "OrdersLeft: " << limitedDriverVolunteer->getNumOrdersLeft();
+            cout << "OrdersLeft: " << limitedDriverVolunteer->getNumOrdersLeft() << endl;
         }
         complete();
     }
@@ -368,7 +383,7 @@ PrintActionsLog::PrintActionsLog() {
 
 void PrintActionsLog::act(WareHouse &wareHouse) {
     for (BaseAction* action : wareHouse.getActions()){
-        action->toString();
+        cout << action->toString() << endl;
     }
     complete();
 }
@@ -383,40 +398,78 @@ string PrintActionsLog::toString() const {
 // NEED TO DO
 
 Close::Close() {
-
 }
 void Close::act(WareHouse &wareHouse) {
-
+    for(Order* order : wareHouse.getAllOrders()) {
+        cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+    }
+    //delete &wareHouse;
+    wareHouse.close();
 }
-Close* Close::clone() const {
 
+Close* Close::clone() const {
+    return new Close(*this);
 }
 string Close::toString() const {
-
+    return "close " + actionStatusToString(getStatus());
 }
 
 BackupWareHouse::BackupWareHouse() {
-
 }
 void BackupWareHouse::act(WareHouse &wareHouse) {
+    if(backup != nullptr) {
+        backup = nullptr;
+    }
+    backup = new WareHouse(wareHouse);
+    complete();
+    // // what about the fields
+    // for(Volunteer* volunteer : wareHouse.getVolunteers()) {
+    //     backup->getVolunteers().push_back(volunteer->clone());
+    // }
+    // for(Customer* customer : wareHouse.getCustomers()) {
+    //     backup->getCustomers().push_back(customer->clone());
+        
+    // }
+    //  for(BaseAction* action : wareHouse.getActions()) {
+    //     backup->addAction(action->clone());
+    // }
+    // for(Order* order : wareHouse.getPendingOrders()) {
+    //     backup->getPendingOrders().push_back(new Order(*order));
+    // }
+    // for(Order* order : wareHouse.getProcessOrders()) {
+    //     backup->getProcessOrders().push_back(new Order(*order));
+    // }    
+    // for(Order* order : wareHouse.getCompletedOrders()) {
+    //     backup->getCompletedOrders().push_back(new Order(*order));
+    // }   
+    // for(Order* order : wareHouse.getAllOrders()) {
+    //     backup->getAllOrders().push_back(new Order(*order));
+    // }
 
 }
 BackupWareHouse* BackupWareHouse::clone() const {
-
+    return new BackupWareHouse(*this);
 }
 string BackupWareHouse::toString() const {
-
+    return "backup " + actionStatusToString(getStatus());
 }
 
 RestoreWareHouse::RestoreWareHouse() {
 
 }
 void RestoreWareHouse::act(WareHouse &wareHouse) {
-
+    if(backup!=nullptr) {
+        //delete &wareHouse;
+        wareHouse = *backup;
+        complete();
+    } else {
+        error("No backup available");
+        cerr << getErrorMsg() << endl;
+    }
 }
 RestoreWareHouse* RestoreWareHouse::clone() const {
-
+    return new RestoreWareHouse(*this);
 }
 string RestoreWareHouse::toString() const {
-
+    return "restore " +  actionStatusToString(getStatus());
 }

@@ -31,10 +31,10 @@ const string& Volunteer::getName() const {
  }
 
  void Volunteer::setCompletedOrderId(int completeOrder) {
-    completedOrderId == completeOrder;
+    completedOrderId = completeOrder;
  }
   void Volunteer::setActiveOrderId(int activeOrder) {
-    activeOrderId == activeOrder;
+    activeOrderId = activeOrder;
  }
 
 
@@ -154,6 +154,7 @@ string LimitedCollectorVolunteer::getTypeVolunteer() {
 DriverVolunteer::DriverVolunteer(int _id, string _name, int _maxDistance, int _distancePerStep) :
 Volunteer(_id,_name), maxDistance(_maxDistance), distancePerStep(_distancePerStep)
 {
+    distanceLeft = 0;
     typeVolunteer = "DriverVolunteer";
 }
 

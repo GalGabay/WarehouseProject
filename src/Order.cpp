@@ -63,3 +63,7 @@ const string Order::toString() const {
 const int Order::getDistance() const {
     return distance;
 }
+
+Order* Order::clone() {
+    return new Order(*this);
+}

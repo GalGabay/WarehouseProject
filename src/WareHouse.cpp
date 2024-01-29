@@ -34,56 +34,51 @@ void WareHouse::start() {
         iterateWord >> firstWord;
         if(firstWord == "step") {
             iterateWord >> secondWord;
-            SimulateStep step(stoi(secondWord)); 
-            addAction(&step);
-            step.act(*this); // ?? is that working?
+            SimulateStep* step = new SimulateStep(stoi(secondWord)); 
+            step->act(*this); // ?? is that working?
+            addAction(step);
         } else if(firstWord == "order") { // WORKING!!
             iterateWord >> secondWord;
-            AddOrder addOrder(stoi(secondWord));
-            addOrder.act(*this);
-            addAction(&addOrder);
+            AddOrder* addOrder = new AddOrder(stoi(secondWord));
+            addOrder->act(*this);
+            addAction(addOrder);
         } else if(firstWord == "customer") { // WORKING!!
             iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
-            AddCustomer addCustomer(secondWord,thirdWord,stoi(fourthWord),stoi(fifthWord));
-            addCustomer.act(*this);
-            addAction(&addCustomer);
+            AddCustomer* addCustomer = new AddCustomer(secondWord,thirdWord,stoi(fourthWord),stoi(fifthWord));
+            addCustomer->act(*this);
+            addAction(addCustomer);
         } else if(firstWord == "orderStatus") {
             iterateWord >> secondWord;
-            PrintOrderStatus printOrderS(stoi(secondWord)); 
-            printOrderS.act(*this);
-            addAction(&printOrderS);
+            PrintOrderStatus* printOrderS = new PrintOrderStatus(stoi(secondWord)); 
+            printOrderS->act(*this);
+            addAction(printOrderS);
         } else if(firstWord == "customerStatus") {
             iterateWord >> secondWord;
-            PrintCustomerStatus printCustomerS(stoi(secondWord));
-            printCustomerS.act(*this);
-            addAction(&printCustomerS);
+            PrintCustomerStatus* printCustomerS = new PrintCustomerStatus(stoi(secondWord));
+            printCustomerS->act(*this);
+            addAction(printCustomerS);
         } else if(firstWord == "volunteerStatus") {
             iterateWord >> secondWord;
-            PrintVolunteerStatus printVolunteerS(stoi(secondWord));
-            printVolunteerS.act(*this);
-            addAction(&printVolunteerS);
+            PrintVolunteerStatus* printVolunteerS = new PrintVolunteerStatus(stoi(secondWord));
+            printVolunteerS->act(*this);
+            addAction(printVolunteerS);
         } else if(firstWord == "log") {
-            PrintActionsLog printActionsL;
-            printActionsL.act(*this);
-            addAction(&printActionsL);
+            PrintActionsLog* printActionsL = new PrintActionsLog;
+            printActionsL->act(*this);
+            addAction(printActionsL);
         } else if(firstWord == "close") {
-            Close close;
-            close.act(*this);
-            addAction(&close);
+            Close* close = new Close;
+            close->act(*this);
+            addAction(close);
         } else if(firstWord == "backup") {
-            BackupWareHouse backup;
-            backup.act(*this);
-            addAction(&backup);
+            BackupWareHouse* backup = new BackupWareHouse;
+            backup->act(*this);
+            addAction(backup);
         } else if(firstWord == "restore") {
-            // NEED TO ADD ERROR
-            RestoreWareHouse restore;
-            restore.act(*this);
-            addAction(&restore);
+            RestoreWareHouse* restore = new RestoreWareHouse;
+            restore->act(*this);
+            addAction(restore);
         } 
-
-
-        
-
     }
 
 }
@@ -203,6 +198,75 @@ void WareHouse::CreateCustomer(string secondWord, string thirdWord, string fourt
         customers.push_back(newCivilianCustomer);
     }
     customerCounter++;
+}
+
+template <typename T> void WareHouse::deleteVector(vector<T*> toDeleteVector) {
+    for (T* element : toDeleteVector) {
+         delete element;
+         element = nullptr;
+    }
+    toDeleteVector.clear();  
+}
+
+ WareHouse::WareHouse(WareHouse& other) : customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter),
+    orderCounter(other.orderCounter), isOpen(other.isOpen)
+  {
+    defaultVolunteer = other.defaultVolunteer->clone();
+    defaultCustomer = other.defaultCustomer->clone();
+    for(Volunteer* volunteer : other.volunteers) {
+        volunteers.push_back(volunteer->clone());
+    }
+    for(Customer* customer : other.customers) {
+        customers.push_back(customer->clone());
+    }
+     for(BaseAction* action : other.actionsLog) {
+        addAction(action->clone());
+    }
+    for(Order* order : other.pendingOrders) {
+        pendingOrders.push_back(order->clone());
+
+    }
+    for(Order* order : other.inProcessOrders) {
+        inProcessOrders.push_back(order->clone());
+    }    
+    for(Order* order : other.completedOrders) {
+        completedOrders.push_back(order->clone());
+    }   
+  //  for(Order* order : other.allOrders) {
+  //      allOrders.push_back(order->clone());
+   // }
+ }
+
+WareHouse::~WareHouse() {
+    deleteVector(actionsLog);
+    deleteVector(volunteers);
+    deleteVector(pendingOrders);
+    deleteVector(inProcessOrders);
+    deleteVector(completedOrders);
+    allOrders.clear();
+    deleteVector(customers);
+    delete defaultCustomer;
+    delete defaultVolunteer;
+    defaultCustomer = nullptr;
+    defaultVolunteer = nullptr;
+}
+
+void WareHouse::operator=(const WareHouse& other) {
+    if(&other != this) {
+        isOpen = other.isOpen;
+        actionsLog = other.actionsLog;
+        volunteers = other.volunteers;
+        pendingOrders = other.pendingOrders;
+        inProcessOrders = other.inProcessOrders;
+        completedOrders = other.completedOrders;
+        customers = other.customers;
+        customerCounter = other.customerCounter;
+        volunteerCounter = other.volunteerCounter;
+        orderCounter = other.orderCounter;
+        allOrders = other.allOrders;
+        defaultVolunteer = other.defaultVolunteer;
+        defaultCustomer = other.defaultCustomer;
+    }
 }
 
 

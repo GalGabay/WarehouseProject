@@ -27,6 +27,10 @@ class WareHouse {
         void close();
         void open();
 
+        ~WareHouse();
+        WareHouse(WareHouse& other);
+        void operator=(const WareHouse& other);
+        template <typename T> void deleteVector(vector<T*> toDeleteVector);
         void parseText(const string &configFilePath);
         vector<Order*>& getPendingOrders();
         vector<Order*>& getProcessOrders();
@@ -56,4 +60,5 @@ class WareHouse {
         vector<Order*> allOrders;
         CollectorVolunteer* defaultVolunteer;
         CivilianCustomer* defaultCustomer;
+    
 };

@@ -107,6 +107,7 @@ class PrintVolunteerStatus : public BaseAction {
         void act(WareHouse &wareHouse) override;
         PrintVolunteerStatus *clone() const override;
         string toString() const override;
+
     private:
         const int VolunteerId;
 };
