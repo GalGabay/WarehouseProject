@@ -1,11 +1,13 @@
 #pragma once
 #include <string>
 #include <vector>
-using namespace std;
 
+//#include "Action.h"
 #include "Order.h"
 #include "Customer.h"
 #include "Volunteer.h"
+
+using namespace std;
 
 class BaseAction;
 class Volunteer;
@@ -30,7 +32,7 @@ class WareHouse {
         ~WareHouse();
         WareHouse(WareHouse& other);
         void operator=(const WareHouse& other);
-        template <typename T> void deleteVector(vector<T*> toDeleteVector);
+        template <typename T> void deleteVector(vector<T*>& toDeleteVector);
         void parseText(const string &configFilePath);
         vector<Order*>& getPendingOrders();
         vector<Order*>& getProcessOrders();

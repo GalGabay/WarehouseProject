@@ -251,17 +251,17 @@ PrintOrderStatus::PrintOrderStatus(int id) : orderId(id)
 
 void PrintOrderStatus::act(WareHouse &wareHouse) {
     if(orderId < wareHouse.getOrderCounter()) {
-        cout << "entered" << endl;
-        Order* theOrder = wareHouse.getAllOrders()[orderId];
-        cout << theOrder->toString() << endl;
-        cout << "CustomerId: " << theOrder->getCustomerId() << endl;
-        if(theOrder->getCollectorId() != NO_VOLUNTEER) {
-            cout << "Collector: " <<theOrder->getCollectorId() << endl;
+        //Order* theOrder = wareHouse.getAllOrders()[orderId];
+        Order theOrder = wareHouse.getOrder(orderId);
+        cout << theOrder.toString() << endl;
+        cout << "CustomerId: " << theOrder.getCustomerId() << endl;
+        if(theOrder.getCollectorId() != NO_VOLUNTEER) {
+            cout << "Collector: " <<theOrder.getCollectorId() << endl;
         } else {
             cout << "Collector: None" << endl;
         }
-        if(theOrder->getDriverId() != NO_VOLUNTEER) {
-            cout << "Driver: " <<theOrder->getDriverId() << endl;
+        if(theOrder.getDriverId() != NO_VOLUNTEER) {
+            cout << "Driver: " <<theOrder.getDriverId() << endl;
         } else {
             cout << "Driver: None" << endl;
         }

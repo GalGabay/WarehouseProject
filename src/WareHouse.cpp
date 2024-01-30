@@ -130,7 +130,22 @@ Volunteer& WareHouse::getVolunteer(int volunteerId) const {
 
 // ?? ?? do we need * ??? NEED TO CHANGE
 Order& WareHouse::getOrder(int orderId) const {
-    Order* order = allOrders[orderId];
+    Order* order;
+    for(Order* order : pendingOrders) {
+        if(order->getId() == orderId) {
+            return *order;
+        }
+    }
+    for(Order* order : inProcessOrders) {
+        if(order->getId() == orderId) {
+            return *order;
+        }
+    }
+    for(Order* order : completedOrders) {
+        if(order->getId() == orderId) {
+            return *order;
+        }
+    }
     return *order;
 }
 
@@ -200,7 +215,7 @@ void WareHouse::CreateCustomer(string secondWord, string thirdWord, string fourt
     customerCounter++;
 }
 
-template <typename T> void WareHouse::deleteVector(vector<T*> toDeleteVector) {
+template <typename T> void WareHouse::deleteVector(vector<T*>& toDeleteVector) {
     for (T* element : toDeleteVector) {
          delete element;
          element = nullptr;
@@ -232,9 +247,9 @@ template <typename T> void WareHouse::deleteVector(vector<T*> toDeleteVector) {
     for(Order* order : other.completedOrders) {
         completedOrders.push_back(order->clone());
     }   
-  //  for(Order* order : other.allOrders) {
-  //      allOrders.push_back(order->clone());
-   // }
+    // for(Order* order : other.allOrders) {
+    //    allOrders.push_back(order->clone());
+    // }
  }
 
 WareHouse::~WareHouse() {
@@ -254,18 +269,63 @@ WareHouse::~WareHouse() {
 void WareHouse::operator=(const WareHouse& other) {
     if(&other != this) {
         isOpen = other.isOpen;
-        actionsLog = other.actionsLog;
-        volunteers = other.volunteers;
-        pendingOrders = other.pendingOrders;
-        inProcessOrders = other.inProcessOrders;
-        completedOrders = other.completedOrders;
-        customers = other.customers;
         customerCounter = other.customerCounter;
         volunteerCounter = other.volunteerCounter;
         orderCounter = other.orderCounter;
-        allOrders = other.allOrders;
-        defaultVolunteer = other.defaultVolunteer;
-        defaultCustomer = other.defaultCustomer;
+        // defaultVolunteer = other.defaultVolunteer;
+        // defaultCustomer = other.defaultCustomer;
+        // actionsLog = other.actionsLog;
+        // volunteers = other.volunteers;
+        // pendingOrders = other.pendingOrders;
+        // inProcessOrders = other.inProcessOrders;
+        // completedOrders = other.completedOrders;
+        // customers = other.customers;
+        
+        // allOrders = other.allOrders;
+
+
+
+         //check::
+        delete defaultCustomer;
+        delete defaultVolunteer;
+        defaultCustomer = nullptr;
+        defaultVolunteer = nullptr;
+        defaultVolunteer = new CollectorVolunteer(*other.defaultVolunteer);
+        defaultCustomer = new CivilianCustomer(*other.defaultCustomer);
+       
+        //deleteVector(actionsLog);
+        deleteVector(volunteers);
+        deleteVector(pendingOrders);
+        deleteVector(inProcessOrders);
+        deleteVector(completedOrders);
+        allOrders.clear();
+        deleteVector(customers);
+
+
+
+        // for(Action* action : other.actionsLog) {
+        //     actionsLog.push_back(action);
+        // }
+        for(Volunteer* action : other.volunteers) {
+            volunteers.push_back(action->clone());
+        }
+        for(Order* action : other.pendingOrders) {
+            pendingOrders.push_back(action->clone());
+        }
+        for(Order* action : other.inProcessOrders) {
+            inProcessOrders.push_back(action->clone());
+        }
+        for(Order* action : other.completedOrders) {
+            completedOrders.push_back(action->clone());
+        }
+        for(Customer* action : other.customers) {
+            customers.push_back(action->clone());
+        }
+        for(Order* action : other.allOrders) {
+            allOrders.push_back(action->clone());
+        }
+        
+        
     }
 }
 
@@ -295,20 +355,11 @@ void WareHouse::parseText(const string &configFilePath) {
         if(firstWord=="customer") {
             iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
             CreateCustomer(secondWord,thirdWord,fourthWord,fifthWord);
-            // if(thirdWord=="soldier") {
-            //     SoldierCustomer* newSoldierCustomer = new SoldierCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-            //     customers.push_back(newSoldierCustomer);
-            // } else {
-            //     CivilianCustomer* newCivilianCustomer = new CivilianCustomer(customerCounter,secondWord,stoi(fourthWord),stoi(fifthWord));
-            //     customers.push_back(newCivilianCustomer);
-            // }
-            // customerCounter++;
-        } else if(firstWord=="volunteer") {
+
+        } else if(firstWord=="volunteer") {   
             
             iterateWord >> secondWord;
             iterateWord >> thirdWord;
-     
-            
             if(thirdWord == "collector") {
             
                 iterateWord >> fourthWord;
