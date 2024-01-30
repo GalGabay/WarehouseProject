@@ -92,7 +92,7 @@ void WareHouse::addOrder(Order* order) {
         //     inProcessOrders.push_back(order);
         // else if(order->getStatus() == OrderStatus::COMPLETED)
         //     completedOrders.push_back(order);
-    allOrders.push_back(order);
+    //allOrders.push_back(order);
     orderCounter++;
 
 }
@@ -171,9 +171,9 @@ vector<Order*>& WareHouse::getProcessOrders() {
 vector<Order*>& WareHouse::getCompletedOrders() {
     return completedOrders;
 }
-vector<Order*>& WareHouse::getAllOrders() {
-    return allOrders;
-}
+// vector<Order*>& WareHouse::getAllOrders() {
+//     return allOrders;
+// }
 
 vector<Volunteer*>& WareHouse::getVolunteers() {
         return volunteers;
@@ -258,7 +258,7 @@ WareHouse::~WareHouse() {
     deleteVector(pendingOrders);
     deleteVector(inProcessOrders);
     deleteVector(completedOrders);
-    allOrders.clear();
+    //allOrders.clear();
     deleteVector(customers);
     delete defaultCustomer;
     delete defaultVolunteer;
@@ -293,19 +293,19 @@ void WareHouse::operator=(const WareHouse& other) {
         defaultVolunteer = new CollectorVolunteer(*other.defaultVolunteer);
         defaultCustomer = new CivilianCustomer(*other.defaultCustomer);
        
-        //deleteVector(actionsLog);
+        deleteVector(actionsLog);
         deleteVector(volunteers);
         deleteVector(pendingOrders);
         deleteVector(inProcessOrders);
         deleteVector(completedOrders);
-        allOrders.clear();
+        //allOrders.clear();
         deleteVector(customers);
 
 
 
-        // for(Action* action : other.actionsLog) {
-        //     actionsLog.push_back(action);
-        // }
+        for(BaseAction* action : other.actionsLog) {
+            actionsLog.push_back(action->clone());
+        }
         for(Volunteer* action : other.volunteers) {
             volunteers.push_back(action->clone());
         }
@@ -321,9 +321,9 @@ void WareHouse::operator=(const WareHouse& other) {
         for(Customer* action : other.customers) {
             customers.push_back(action->clone());
         }
-        for(Order* action : other.allOrders) {
-            allOrders.push_back(action->clone());
-        }
+        // for(Order* action : other.allOrders) {
+        //     allOrders.push_back(action->clone());
+        // }
         
         
     }

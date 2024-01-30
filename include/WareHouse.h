@@ -37,7 +37,7 @@ class WareHouse {
         vector<Order*>& getPendingOrders();
         vector<Order*>& getProcessOrders();
         vector<Order*>& getCompletedOrders();
-        vector<Order*>& getAllOrders();
+        //vector<Order*>& getAllOrders();
         vector<Volunteer*>& getVolunteers();
         vector<Customer*>& getCustomers();
         void AddOrderCounter();
@@ -59,7 +59,7 @@ class WareHouse {
         int volunteerCounter; //For assigning unique volunteer IDs
 
         int orderCounter; // still need to use this
-        vector<Order*> allOrders;
+        //vector<Order*> allOrders;
         CollectorVolunteer* defaultVolunteer;
         CivilianCustomer* defaultCustomer;
     

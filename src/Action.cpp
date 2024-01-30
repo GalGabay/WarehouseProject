@@ -292,9 +292,10 @@ void PrintCustomerStatus::act(WareHouse &wareHouse) {
         Customer* customer = wareHouse.getCustomers()[customerId];
         cout << "CustomerID: " << customerId << endl;
         for(int orderId : customer->getOrdersIds()) {
-            Order* order = wareHouse.getAllOrders()[orderId];
-            cout << "OrderID: " << order->getId() << endl;
-            cout << "OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+            //Order* order = wareHouse.getAllOrders()[orderId];
+            Order order = wareHouse.getOrder(orderId);
+            cout << "OrderID: " << order.getId() << endl;
+            cout << "OrderStatus: " << order.orderStatusToString(order.getStatus()) << endl;
         }
         cout << "numOrdersLeft: " << customer->getMaxOrders()-customer->getNumOrders() << endl;
         complete();
@@ -400,9 +401,31 @@ string PrintActionsLog::toString() const {
 Close::Close() {
 }
 void Close::act(WareHouse &wareHouse) {
-    for(Order* order : wareHouse.getAllOrders()) {
-        cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+    int counter = 0;
+    while(counter < wareHouse.getOrderCounter()) {
+        for(Order* order : wareHouse.getPendingOrders()) {
+            if(order->getId() == counter) {
+                cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+                break;
+            }
+        }
+        for(Order* order : wareHouse.getProcessOrders()) {
+            if(order->getId() == counter) {
+                cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+                break;
+            }
+        }
+        for(Order* order : wareHouse.getCompletedOrders()) {
+            if(order->getId() == counter) {
+                cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+                break;
+            }
+        }
+        counter++;
     }
+    // for(Order* order : wareHouse.getAllOrders()) {
+    //     cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
+    // }
     //delete &wareHouse;
     wareHouse.close();
 }
