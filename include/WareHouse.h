@@ -32,6 +32,8 @@ class WareHouse {
         ~WareHouse();
         WareHouse(WareHouse& other);
         void operator=(const WareHouse& other);
+        WareHouse(WareHouse&& other);
+        void operator=(WareHouse&& other);
         template <typename T> void deleteVector(vector<T*>& toDeleteVector);
         void parseText(const string &configFilePath);
         vector<Order*>& getPendingOrders();

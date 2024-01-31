@@ -79,8 +79,6 @@ bool CollectorVolunteer::hasOrdersLeft() const {
 }
 
 bool CollectorVolunteer::canTakeOrder(const Order &order) const {
-    //std::cout << "Collector " << getName() << " is of type: " << typeVolunteer << std::endl;
-    //std::cout << "Collector " << getName() << " is busy: " << isBusy() << std::endl;
     return !isBusy();
 }
 
@@ -237,7 +235,8 @@ bool LimitedDriverVolunteer::hasOrdersLeft() const {
 }
 
 bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
-    return !isBusy() && hasOrdersLeft();
+    int distance = order.getDistance();
+    return (getMaxDistance() >= distance && !isBusy() && hasOrdersLeft());
 }
 
 // ???

@@ -329,7 +329,6 @@ void PrintVolunteerStatus::act(WareHouse &wareHouse) {
         }
     }
     if(volunteer != nullptr) {
-        cout << "VolunteerID: " << VolunteerId << endl;
         string isBusy = volunteer->isBusy() ? "true" : "false";
         cout << "isBusy: " << isBusy << endl;
         if (volunteer->isBusy()){

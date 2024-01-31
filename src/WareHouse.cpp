@@ -130,7 +130,6 @@ Volunteer& WareHouse::getVolunteer(int volunteerId) const {
 
 // ?? ?? do we need * ??? NEED TO CHANGE
 Order& WareHouse::getOrder(int orderId) const {
-    Order* order;
     for(Order* order : pendingOrders) {
         if(order->getId() == orderId) {
             return *order;
@@ -146,7 +145,7 @@ Order& WareHouse::getOrder(int orderId) const {
             return *order;
         }
     }
-    return *order;
+   return *(new Order(-1,-1,0));
 }
 
 const vector<BaseAction*>& WareHouse::getActions() const {
@@ -223,8 +222,9 @@ template <typename T> void WareHouse::deleteVector(vector<T*>& toDeleteVector) {
     toDeleteVector.clear();  
 }
 
- WareHouse::WareHouse(WareHouse& other) : customerCounter(other.customerCounter), volunteerCounter(other.volunteerCounter),
-    orderCounter(other.orderCounter), isOpen(other.isOpen)
+ WareHouse::WareHouse(WareHouse& other) : isOpen(other.isOpen), customerCounter(other.customerCounter),
+  volunteerCounter(other.volunteerCounter),
+    orderCounter(other.orderCounter)
   {
     defaultVolunteer = other.defaultVolunteer->clone();
     defaultCustomer = other.defaultCustomer->clone();
@@ -324,6 +324,101 @@ void WareHouse::operator=(const WareHouse& other) {
         // for(Order* action : other.allOrders) {
         //     allOrders.push_back(action->clone());
         // }
+        
+        
+    }
+}
+
+WareHouse::WareHouse(WareHouse&& other) : isOpen(other.isOpen), customerCounter(other.customerCounter), 
+volunteerCounter(other.volunteerCounter),
+    orderCounter(other.orderCounter)
+  {
+    defaultVolunteer = other.defaultVolunteer;
+    other.defaultVolunteer = nullptr;
+    defaultCustomer = other.defaultCustomer;
+    other.defaultCustomer = nullptr;
+    for(Volunteer* volunteer : other.volunteers) {
+        volunteers.push_back(volunteer);
+        volunteer = nullptr;
+    }
+    for(Customer* customer : other.customers) {
+        customers.push_back(customer);
+        customer = nullptr;
+    }
+     for(BaseAction* action : other.actionsLog) {
+        addAction(action);
+        action = nullptr;
+    }
+    for(Order* order : other.pendingOrders) {
+        pendingOrders.push_back(order);
+        order = nullptr;
+    }
+    for(Order* order : other.inProcessOrders) {
+        inProcessOrders.push_back(order);
+        order = nullptr;
+    }    
+    for(Order* order : other.completedOrders) {
+        completedOrders.push_back(order);
+        order = nullptr;
+    }   
+    // for(Order* order : other.allOrders) {
+    //    allOrders.push_back(order->clone());
+    // }
+ }
+
+ void WareHouse::operator=(WareHouse&& other) {
+    if(&other != this) {
+        isOpen = other.isOpen;
+        customerCounter = other.customerCounter;
+        volunteerCounter = other.volunteerCounter;
+        orderCounter = other.orderCounter;
+
+        delete defaultCustomer;
+        delete defaultVolunteer;
+        defaultCustomer = nullptr;
+        defaultVolunteer = nullptr;
+        defaultVolunteer = std::move(other.defaultVolunteer);
+        other.defaultVolunteer = nullptr;
+        defaultCustomer = std::move(other.defaultCustomer);
+        other.defaultCustomer = nullptr;
+
+        //delete "this":
+        deleteVector(actionsLog);
+        deleteVector(volunteers);
+        deleteVector(pendingOrders);
+        deleteVector(inProcessOrders);
+        deleteVector(completedOrders);
+        deleteVector(customers);
+
+        //steal from other:
+        // std::move ???
+        for(BaseAction* action : other.actionsLog) {
+            actionsLog.push_back(action);
+        }
+        for(Volunteer* action : other.volunteers) {
+            volunteers.push_back(action);
+        }
+        for(Order* action : other.pendingOrders) {
+            pendingOrders.push_back(action);
+        }
+        for(Order* action : other.inProcessOrders) {
+            inProcessOrders.push_back(action);
+        }
+        for(Order* action : other.completedOrders) {
+            completedOrders.push_back(action);
+        }
+        for(Customer* action : other.customers) {
+            customers.push_back(action);
+        }
+
+        // delete all others:
+        deleteVector(other.actionsLog);
+        deleteVector(other.volunteers);
+        deleteVector(other.pendingOrders);
+        deleteVector(other.inProcessOrders);
+        deleteVector(other.completedOrders);
+        deleteVector(other.customers);
+
         
         
     }

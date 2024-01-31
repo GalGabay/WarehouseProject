@@ -4,8 +4,8 @@ using namespace std;
 
 Order::Order(int _id, int _customerId, int _distance) : 
     id(_id), customerId(_customerId), distance(_distance), 
-    driverId(NO_VOLUNTEER), collectorId(NO_VOLUNTEER),
-    status(OrderStatus::PENDING)
+    status(OrderStatus::PENDING),collectorId(NO_VOLUNTEER),
+    driverId(NO_VOLUNTEER)
     {}
 
 
@@ -60,7 +60,7 @@ const string Order::toString() const {
    return output; 
 }
 
-const int Order::getDistance() const {
+int Order::getDistance() const {
     return distance;
 }
 

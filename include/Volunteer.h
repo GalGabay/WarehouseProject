@@ -27,6 +27,7 @@ class Volunteer {
         void setCompletedOrderId(int completeOrder);
         void setActiveOrderId(int activeOrder);
         virtual string getTypeVolunteer() = 0;
+        virtual ~Volunteer() = default;
 
     protected:
         int completedOrderId; //Initialized to NO_ORDER if no order has been completed yet

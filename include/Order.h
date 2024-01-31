@@ -31,7 +31,7 @@ class Order {
         OrderStatus getStatus() const;
         const string toString() const;
 
-        const int getDistance() const;
+        int getDistance() const;
         string orderStatusToString(OrderStatus status) const;
         Order *clone();
 

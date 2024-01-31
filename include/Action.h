@@ -25,6 +25,7 @@ class BaseAction{
         virtual string toString() const=0;
         virtual BaseAction* clone() const=0;
 
+        virtual ~BaseAction() = default;
         
 
     protected:
