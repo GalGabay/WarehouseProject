@@ -4,9 +4,9 @@
 #include <iostream>
 extern WareHouse* backup;
 
-// ???
+
 BaseAction::BaseAction() {
-    errorMsg = ""; //?
+    errorMsg = "";
 }
 
  ActionStatus BaseAction::getStatus() const {
@@ -62,7 +62,7 @@ BaseAction::BaseAction() {
     return new SimulateStep(*this);
  }
 
-// not finished!!
+
 void SimulateStep::stage1(WareHouse &wareHouse) {
     vector<Order*> pendOrders =  wareHouse.getPendingOrders();
     for(Order* order : pendOrders) {
@@ -72,7 +72,6 @@ void SimulateStep::stage1(WareHouse &wareHouse) {
 
                     if(volunteer->canTakeOrder(*order)) {
                         
-                        cout << "volunteer " << volunteer->getName() << " entered to order: " <<order->getId() <<endl;
                         volunteer->acceptOrder(*order);
                         order->setCollectorId(volunteer->getId());
                         // ERASING:
@@ -114,7 +113,6 @@ void SimulateStep::stage234(WareHouse &wareHouse) {
     for(Order* order : processOrders) {
         if(order->getStatus() ==OrderStatus::COLLECTING) {
 
-            // why &warehouse and not warehouse
             CollectorVolunteer* collector = dynamic_cast<CollectorVolunteer*>(&wareHouse.getVolunteer(order->getCollectorId()));
             (*collector).setTimeLeft((*collector).getTimeLeft() - 1);
             //stage 3
@@ -141,7 +139,7 @@ void SimulateStep::stage234(WareHouse &wareHouse) {
             }
         } else if(order->getStatus() ==OrderStatus::DELIVERING) {
 
-            // why &warehouse and not warehouse
+
             DriverVolunteer* driver = dynamic_cast<DriverVolunteer*>(&wareHouse.getVolunteer(order->getDriverId()));
             (*driver).decreaseDistanceLeft();
             //stage 3
@@ -183,8 +181,6 @@ void AddOrder::act(WareHouse &wareHouse) {
     } 
     else { 
         Customer* theCustomer = wareHouse.getCustomers()[customerId]; 
-        //cout << "maxorders: " << theCustomer->getMaxOrders() << endl;
-        //cout << "numOrders: " << theCustomer->getNumOrders() << endl;
        
         if(theCustomer->getMaxOrders() == theCustomer->getNumOrders()) {
             
@@ -195,13 +191,9 @@ void AddOrder::act(WareHouse &wareHouse) {
         } 
         else {
 
-            //need to push to ordersId of customer
-            //theCustomer->getOrdersIds().push_back(wareHouse.getOrderCounter());
             Order* newOrder = new Order(wareHouse.getOrderCounter(), customerId, theCustomer->getCustomerDistance() );
             theCustomer->addOrder(wareHouse.getOrderCounter());
-            //wareHouse.AddOrderCounter();
             wareHouse.addOrder(newOrder);
-            
 
             complete();
         } 
@@ -251,7 +243,6 @@ PrintOrderStatus::PrintOrderStatus(int id) : orderId(id)
 
 void PrintOrderStatus::act(WareHouse &wareHouse) {
     if(orderId < wareHouse.getOrderCounter()) {
-        //Order* theOrder = wareHouse.getAllOrders()[orderId];
         Order theOrder = wareHouse.getOrder(orderId);
         cout << theOrder.toString() << endl;
         cout << "CustomerId: " << theOrder.getCustomerId() << endl;
@@ -292,7 +283,6 @@ void PrintCustomerStatus::act(WareHouse &wareHouse) {
         Customer* customer = wareHouse.getCustomers()[customerId];
         cout << "CustomerID: " << customerId << endl;
         for(int orderId : customer->getOrdersIds()) {
-            //Order* order = wareHouse.getAllOrders()[orderId];
             Order order = wareHouse.getOrder(orderId);
             cout << "OrderID: " << order.getId() << endl;
             cout << "OrderStatus: " << order.orderStatusToString(order.getStatus()) << endl;
@@ -329,6 +319,7 @@ void PrintVolunteerStatus::act(WareHouse &wareHouse) {
         }
     }
     if(volunteer != nullptr) {
+        cout << "VolunteerID: " << volunteer->getId() << endl;
         string isBusy = volunteer->isBusy() ? "true" : "false";
         cout << "isBusy: " << isBusy << endl;
         if (volunteer->isBusy()){
@@ -395,7 +386,6 @@ string PrintActionsLog::toString() const {
     return output;
 }
 
-// NEED TO DO
 
 Close::Close() {
 }
@@ -422,10 +412,7 @@ void Close::act(WareHouse &wareHouse) {
         }
         counter++;
     }
-    // for(Order* order : wareHouse.getAllOrders()) {
-    //     cout << "OrderID: " << order->getId() << " , CustomerID: " << order->getCustomerId() << " , OrderStatus: " << order->orderStatusToString(order->getStatus()) << endl;
-    // }
-    //delete &wareHouse;
+
     wareHouse.close();
 }
 
@@ -440,33 +427,11 @@ BackupWareHouse::BackupWareHouse() {
 }
 void BackupWareHouse::act(WareHouse &wareHouse) {
     if(backup != nullptr) {
+        delete backup;
         backup = nullptr;
     }
     backup = new WareHouse(wareHouse);
     complete();
-    // // what about the fields
-    // for(Volunteer* volunteer : wareHouse.getVolunteers()) {
-    //     backup->getVolunteers().push_back(volunteer->clone());
-    // }
-    // for(Customer* customer : wareHouse.getCustomers()) {
-    //     backup->getCustomers().push_back(customer->clone());
-        
-    // }
-    //  for(BaseAction* action : wareHouse.getActions()) {
-    //     backup->addAction(action->clone());
-    // }
-    // for(Order* order : wareHouse.getPendingOrders()) {
-    //     backup->getPendingOrders().push_back(new Order(*order));
-    // }
-    // for(Order* order : wareHouse.getProcessOrders()) {
-    //     backup->getProcessOrders().push_back(new Order(*order));
-    // }    
-    // for(Order* order : wareHouse.getCompletedOrders()) {
-    //     backup->getCompletedOrders().push_back(new Order(*order));
-    // }   
-    // for(Order* order : wareHouse.getAllOrders()) {
-    //     backup->getAllOrders().push_back(new Order(*order));
-    // }
 
 }
 BackupWareHouse* BackupWareHouse::clone() const {
@@ -481,7 +446,6 @@ RestoreWareHouse::RestoreWareHouse() {
 }
 void RestoreWareHouse::act(WareHouse &wareHouse) {
     if(backup!=nullptr) {
-        //delete &wareHouse;
         wareHouse = *backup;
         complete();
     } else {

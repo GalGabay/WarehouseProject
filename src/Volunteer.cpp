@@ -43,7 +43,7 @@ const string& Volunteer::getName() const {
  CollectorVolunteer::CollectorVolunteer(int _id, string _name, int _coolDown) : 
   Volunteer::Volunteer(_id,_name), coolDown(_coolDown)
    {
-    timeLeft = NO_ORDER; // is that right??
+    timeLeft = NO_ORDER; 
     typeVolunteer = "CollectorVolunteer";
    }
 
@@ -51,12 +51,12 @@ CollectorVolunteer* CollectorVolunteer::clone() const {
     return new CollectorVolunteer(*this);
 }
 
-// not sure??
+
 void CollectorVolunteer::step() {
     if(activeOrderId != NO_ORDER) {
         if(decreaseCoolDown()) {
             completedOrderId = activeOrderId;
-            activeOrderId = NO_ORDER; // ?? not what they meant
+            activeOrderId = NO_ORDER; 
         }
     } 
 }
@@ -79,16 +79,16 @@ bool CollectorVolunteer::hasOrdersLeft() const {
 }
 
 bool CollectorVolunteer::canTakeOrder(const Order &order) const {
-    return !isBusy();
+    return !isBusy() && order.getStatus() == OrderStatus::PENDING;
 }
 
-// it's weird! prepare or accept an order???
+
 void CollectorVolunteer::acceptOrder(const Order &order) {
     activeOrderId = order.getId();
     timeLeft = coolDown;
 }
 
-// what should we write here???? !!!!
+
 string CollectorVolunteer::toString() const {
     string output = "Collector: " + this->getId();
     return output;
@@ -119,10 +119,10 @@ bool LimitedCollectorVolunteer::hasOrdersLeft() const {
 }
 
 bool LimitedCollectorVolunteer::canTakeOrder(const Order &order) const {
-    return !isBusy() && hasOrdersLeft();
+    return !isBusy() && hasOrdersLeft() && order.getStatus() == OrderStatus::PENDING;
 }
 
-// // it's weird! prepare or accept an order???
+
 void LimitedCollectorVolunteer::acceptOrder(const Order &order) {
     activeOrderId = order.getId();
     setTimeLeft(getCoolDown());
@@ -137,7 +137,7 @@ int LimitedCollectorVolunteer::getNumOrdersLeft() const {
     return ordersLeft;
 }
 
-// what should we write here???? !!!!
+
 string LimitedCollectorVolunteer::toString() const {
     string output = "LimitedCollector: " + this->getId();
     return output;
@@ -196,7 +196,7 @@ int DriverVolunteer::getDistanceLeft() const {
     decreaseDistanceLeft();
  }
 
-// what should we write here???? !!!!
+
  string DriverVolunteer::toString() const {
     string output = "Driver: " + this->getId();
     return output;
@@ -239,14 +239,14 @@ bool LimitedDriverVolunteer::canTakeOrder(const Order &order) const {
     return (getMaxDistance() >= distance && !isBusy() && hasOrdersLeft());
 }
 
-// ???
+
  void LimitedDriverVolunteer::acceptOrder(const Order &order) {
     activeOrderId = order.getId();
     setDistanceLeft(order.getDistance());
     ordersLeft--;
  }
 
- // what should we write here???? !!!!
+ 
  string LimitedDriverVolunteer::toString() const {
     string output = "LimitedDriver: " + this->getId();
     return output;
