@@ -17,14 +17,13 @@ WareHouse::WareHouse(const string &configFilePath) {
 
 }
 
-// not finished
 void WareHouse::start() {
     isOpen = true;
     cout << "WareHouse is Open!" << endl;
 
     while(isOpen) {
         string input;
-        getline(cin, input); // WORKING !
+        getline(cin, input); 
         istringstream iterateWord(input);
         string firstWord; 
         string secondWord;  
@@ -35,14 +34,14 @@ void WareHouse::start() {
         if(firstWord == "step") {
             iterateWord >> secondWord;
             SimulateStep* step = new SimulateStep(stoi(secondWord)); 
-            step->act(*this); // ?? is that working?
+            step->act(*this); 
             addAction(step);
-        } else if(firstWord == "order") { // WORKING!!
+        } else if(firstWord == "order") { 
             iterateWord >> secondWord;
             AddOrder* addOrder = new AddOrder(stoi(secondWord));
             addOrder->act(*this);
             addAction(addOrder);
-        } else if(firstWord == "customer") { // WORKING!!
+        } else if(firstWord == "customer") { 
             iterateWord >> secondWord >> thirdWord >> fourthWord >> fifthWord;
             AddCustomer* addCustomer = new AddCustomer(secondWord,thirdWord,stoi(fourthWord),stoi(fifthWord));
             addCustomer->act(*this);
@@ -84,15 +83,7 @@ void WareHouse::start() {
 }
 
 void WareHouse::addOrder(Order* order) {
-    //if(order->getStatus() == OrderStatus::PENDING) 
     pendingOrders.push_back(order);
-        // else if(order->getStatus() == OrderStatus::COLLECTING) 
-        //     inProcessOrders.push_back(order);
-        // else if(order->getStatus() == OrderStatus::DELIVERING)
-        //     inProcessOrders.push_back(order);
-        // else if(order->getStatus() == OrderStatus::COMPLETED)
-        //     completedOrders.push_back(order);
-    //allOrders.push_back(order);
     orderCounter++;
 
 }
@@ -101,7 +92,7 @@ void WareHouse::addAction(BaseAction* action) {
     actionsLog.push_back(action);
 }
 
-// ?? do we need * ???
+
 Customer& WareHouse::getCustomer(int customerId) const {
     if(customerCounter < customerId)
         return *defaultCustomer;
@@ -111,7 +102,7 @@ Customer& WareHouse::getCustomer(int customerId) const {
     }
 }
 
-// ?? ?? do we need * 
+
 Volunteer& WareHouse::getVolunteer(int volunteerId) const {
     bool isExist = false;
     for(Volunteer* volunteer : volunteers) {
@@ -128,7 +119,7 @@ Volunteer& WareHouse::getVolunteer(int volunteerId) const {
     
 }
 
-// ?? ?? do we need * ??? NEED TO CHANGE
+
 Order& WareHouse::getOrder(int orderId) const {
     for(Order* order : pendingOrders) {
         if(order->getId() == orderId) {
@@ -170,9 +161,7 @@ vector<Order*>& WareHouse::getProcessOrders() {
 vector<Order*>& WareHouse::getCompletedOrders() {
     return completedOrders;
 }
-// vector<Order*>& WareHouse::getAllOrders() {
-//     return allOrders;
-// }
+
 
 vector<Volunteer*>& WareHouse::getVolunteers() {
         return volunteers;
@@ -247,9 +236,7 @@ template <typename T> void WareHouse::deleteVector(vector<T*>& toDeleteVector) {
     for(Order* order : other.completedOrders) {
         completedOrders.push_back(order->clone());
     }   
-    // for(Order* order : other.allOrders) {
-    //    allOrders.push_back(order->clone());
-    // }
+
  }
 
 WareHouse::~WareHouse() {
@@ -258,7 +245,6 @@ WareHouse::~WareHouse() {
     deleteVector(pendingOrders);
     deleteVector(inProcessOrders);
     deleteVector(completedOrders);
-    //allOrders.clear();
     deleteVector(customers);
     delete defaultCustomer;
     delete defaultVolunteer;
@@ -272,20 +258,8 @@ void WareHouse::operator=(const WareHouse& other) {
         customerCounter = other.customerCounter;
         volunteerCounter = other.volunteerCounter;
         orderCounter = other.orderCounter;
-        // defaultVolunteer = other.defaultVolunteer;
-        // defaultCustomer = other.defaultCustomer;
-        // actionsLog = other.actionsLog;
-        // volunteers = other.volunteers;
-        // pendingOrders = other.pendingOrders;
-        // inProcessOrders = other.inProcessOrders;
-        // completedOrders = other.completedOrders;
-        // customers = other.customers;
-        
-        // allOrders = other.allOrders;
 
 
-
-         //check::
         delete defaultCustomer;
         delete defaultVolunteer;
         defaultCustomer = nullptr;
@@ -298,7 +272,6 @@ void WareHouse::operator=(const WareHouse& other) {
         deleteVector(pendingOrders);
         deleteVector(inProcessOrders);
         deleteVector(completedOrders);
-        //allOrders.clear();
         deleteVector(customers);
 
 
@@ -321,9 +294,6 @@ void WareHouse::operator=(const WareHouse& other) {
         for(Customer* action : other.customers) {
             customers.push_back(action->clone());
         }
-        // for(Order* action : other.allOrders) {
-        //     allOrders.push_back(action->clone());
-        // }
         
         
     }
@@ -361,9 +331,7 @@ volunteerCounter(other.volunteerCounter),
         completedOrders.push_back(order);
         order = nullptr;
     }   
-    // for(Order* order : other.allOrders) {
-    //    allOrders.push_back(order->clone());
-    // }
+
  }
 
  void WareHouse::operator=(WareHouse&& other) {
@@ -391,7 +359,6 @@ volunteerCounter(other.volunteerCounter),
         deleteVector(customers);
 
         //steal from other:
-        // std::move ???
         for(BaseAction* action : other.actionsLog) {
             actionsLog.push_back(action);
         }
