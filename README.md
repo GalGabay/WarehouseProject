@@ -3,6 +3,7 @@
 ## ABOUT:
 Welcome to the most advanced warehouse management system on the internet!
 This C++ project includes an advanced process of warehouse that takes orders and delivers it to the clients. 
+In here you can be your preferred kind of volunteer such as delivering guy or a processing guy, or you just can order a package for your loved ones!
 It has features such as:
 1. Volunteers - the warehouse workers(but they work for free!). there are 2 kinds of volunteers:
      a. collectors: there job is to get orders from client and handle it.
